@@ -13,12 +13,13 @@ import hashlib
 import plotly.graph_objects as go
 import numpy as np
 from database import init_db, create_user, verify_user, get_data
+from webdriver_manager.chrome import ChromeDriverManager
 
 import time
 from datetime import datetime
 
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -64,13 +65,13 @@ def show_auth_ui():
         st.header("Login")
         login_email = st.text_input("Email", key="login_email")  # Changed to email
         login_password = st.text_input("Password", type="password", key="login_password")
-        edgedriver_path = st.text_input("Edge Driver Path", key="edgeDriver_path")
+        chromedriver_path = st.text_input("Chrome Driver Path", key="chromedriver_path")
         if st.button("Login"):
             if verify_user(login_email, login_password):  # Use email for verification
                 st.session_state.authenticated = True
                 st.session_state.username = login_email  # Store email in session state
                 st.session_state.password = login_password  # Store password in session state
-                st.session_state.edgedriver_path = edgedriver_path
+                st.session_state.chromedriver_path = chromedriver_path
                 st.success("Successfully logged in!")
                 st.rerun()
             else:
@@ -82,7 +83,7 @@ def show_auth_ui():
         new_username = st.text_input("Username (optional)", key="new_username")
         new_password = st.text_input("Password", type="password", key="new_password")
         confirm_password = st.text_input("Confirm Password", type="password", key="confirm_password")
-        edgedriver_path = st.text_input("Edge Driver Path", key="edgedriver_path_signup")
+        chromedriver_path = st.text_input("Chrome Driver Path", key="chromedriver_path_signup")
         
         if st.button("Sign Up"):
             if new_password != confirm_password:
@@ -91,7 +92,7 @@ def show_auth_ui():
                 st.error("Password must be at least 6 characters long")
             else:
                 if create_user(new_username, new_password, new_email):  # Use email for account creation
-                    st.session_state.edgedriver_path = edgedriver_path
+                    st.session_state.chromedriver_path = chromedriver_path
                     st.success("Account created successfully! Please login.")
                 else:
                     st.error("Email already exists")
@@ -146,7 +147,7 @@ else:
             st.session_state[f'score_{content_hash}'] = score
 
         class ATSScoreComponents:
-            def __init__(self):  # Fix: Add __init__ method
+            def _init_(self):  # Fixed constructor method
                 self.format_score = 0
                 self.content_score = 0
                 self.keyword_score = 0
@@ -722,7 +723,6 @@ else:
                 return [skill.lower() for skill in response.text.split(", ")]
 
             def main(job_type, designations, locations, max_applications, yoe, max_pages, min_match_score, salary):
-                edge_driver_path = st.session_state.get('edgedriver_path')
                 credentials = {}
                 credentials['email'] = st.session_state.get('username')
                 credentials['password'] = st.session_state.get('password')
@@ -730,14 +730,13 @@ else:
                 user_skills = extract_skills_from_resume()
                 expected_domain = "naukri.com"
                 
-                options = webdriver.EdgeOptions()
+                options = webdriver.ChromeOptions()
                 options.add_argument("--disable-blink-features=AutomationControlled")
                 options.add_argument("--start-maximized")
-                options.add_argument("--headless")  # Runs Edge in headless mode.
+                options.add_argument("--headless")  # Runs Chrome in headless mode.
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
-                service = Service(edge_driver_path)
-                driver = webdriver.Edge(service=service, options=options)
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
                 wait = WebDriverWait(driver, 20)
                 
                 try:

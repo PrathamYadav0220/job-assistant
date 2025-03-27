@@ -734,9 +734,10 @@ else:
                 options.add_argument("--window-size=1920,1080")          # Ensure proper viewport size
                 options.add_argument("--disable-gpu")                    # Disable GPU acceleration
                 # For testing, you might comment out headless; later you can enable it:
-                # options.add_argument("--headless")
+                options.add_argument("--headless")  # Enable headless mode for deployment
                 options.add_argument("--no-sandbox")
-                options.add_argument("--disable-dev-shm-usage")
+                # Commenting out --disable-dev-shm-usage to prevent unexpected exit:
+                # options.add_argument("--disable-dev-shm-usage")
                 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
                 wait = WebDriverWait(driver, 20)
                 

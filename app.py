@@ -71,7 +71,6 @@ def show_auth_ui():
                 st.session_state.authenticated = True
                 st.session_state.username = login_email  # Store email in session state
                 st.session_state.password = login_password  # Store password in session state
-                st.session_state.chromedriver_path = chromedriver_path
                 st.success("Successfully logged in!")
                 st.rerun()
             else:
@@ -83,7 +82,7 @@ def show_auth_ui():
         new_username = st.text_input("Username (optional)", key="new_username")
         new_password = st.text_input("Password", type="password", key="new_password")
         confirm_password = st.text_input("Confirm Password", type="password", key="confirm_password")
-        chromedriver_path = st.text_input("Chrome Driver Path", key="chromedriver_path_signup")
+        chromedriver_path_signup = st.text_input("Chrome Driver Path", key="chromedriver_path_signup")
         
         if st.button("Sign Up"):
             if new_password != confirm_password:
@@ -92,7 +91,6 @@ def show_auth_ui():
                 st.error("Password must be at least 6 characters long")
             else:
                 if create_user(new_username, new_password, new_email):  # Use email for account creation
-                    st.session_state.chromedriver_path = chromedriver_path
                     st.success("Account created successfully! Please login.")
                 else:
                     st.error("Email already exists")
@@ -733,7 +731,10 @@ else:
                 options = webdriver.ChromeOptions()
                 options.add_argument("--disable-blink-features=AutomationControlled")
                 options.add_argument("--start-maximized")
-                options.add_argument("--headless")  # Runs Chrome in headless mode.
+                options.add_argument("--window-size=1920,1080")          # Ensure proper viewport size
+                options.add_argument("--disable-gpu")                    # Disable GPU acceleration
+                # For testing, you might comment out headless; later you can enable it:
+                # options.add_argument("--headless")
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)

@@ -733,6 +733,9 @@ else:
                 options = webdriver.EdgeOptions()
                 options.add_argument("--disable-blink-features=AutomationControlled")
                 options.add_argument("--start-maximized")
+                options.add_argument("--headless")  # Runs Edge in headless mode.
+                options.add_argument("--no-sandbox")
+                options.add_argument("--disable-dev-shm-usage")
                 service = Service(edge_driver_path)
                 driver = webdriver.Edge(service=service, options=options)
                 wait = WebDriverWait(driver, 20)

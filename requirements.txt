@@ -7,5 +7,3 @@ plotly
 numpy
 selenium
 webdriver-manager
-sqlite3  # Remove if not using SQLite
-pymongo  # Remove if not using MongoDB
